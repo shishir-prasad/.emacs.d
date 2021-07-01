@@ -174,17 +174,17 @@ Use this for future reference
                                ("d" "Day-Planner" plain
                                 (file+olp+datetree "gtd/daily-planner.org")
                                 "Most Important Tasks
-    - [ ]
-    - [ ]
-    - [ ]
-    Secondary Tasks
-    - [ ]
-    - [ ]
-    - [ ]
-    Daily Tasks
-    - [ ] iBrew-Hub Website and content
-    - [ ] Learn for 2-3 hours
-    - [ ] Journal entry about today's work to be written as blog"
+- [ ]
+- [ ]
+- [ ]
+Secondary Tasks
+- [ ]
+- [ ]
+- [ ]
+Daily Tasks
+- [ ] iBrew-Hub Website and content
+- [ ] Learn for 2-3 hours
+- [ ] Journal entry about today's work to be written as blog"
                                 :empty-lines-before 0 )))
 
 (setq  org-pomodoro-keep-killed-pomodoro-time t)
