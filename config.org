@@ -1,11 +1,11 @@
 #+TITLE: Shishir's Vanilla Emacs Configuration
 
 * Setup Melpa
-  The set up adds  Melpa to the list of org-archives. The initialization configuration is placed in init.el.
+The set up adds  Melpa to the list of org-archives. The initialization configuration is placed in init.el.
 
-  Other than initial config rest is written in org file in the form of literate config.
-  The following block is not a part of emacs-lisp block as it is already mentioned in init.el
-  #+begin_src
+Other than initial config rest is written in org file in the form of literate config.
+The following block is not a part of emacs-lisp block as it is already mentioned in init.el
+#+begin_src
  (require 'package)
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/"))
@@ -15,32 +15,32 @@
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 (setq use-package-always-ensure t)
-  #+end_src
+#+end_src
 
-  Set org up structure template for emacs-lisp source code block
+Set org up structure template for emacs-lisp source code block
 
-  #+begin_src emacs-lisp
-  (require 'org-tempo)
-  #+end_src
+#+begin_src emacs-lisp
+(require 'org-tempo)
+#+end_src
   
 * Custom Functions
 ** Load Init file
-   The custom functions built to facilitate my needs
-   Reload emacs configuration with this function.
-   #+begin_src emacs-lisp
-   (defun shivu-load-init-file ()
-     "Load the init file in vanilla emacs folder. Change the file path for other configuration"
-     (interactive)
-     (load-file "~/.emacs.vanilla/init.el"))
-   #+end_src
+The custom functions built to facilitate my needs
+Reload emacs configuration with this function.
+#+begin_src emacs-lisp
+(defun shivu-load-init-file ()
+  "Load the init file in vanilla emacs folder. Change the file path for other configuration"
+  (interactive)
+  (load-file "~/.emacs.vanilla/init.el"))
+#+end_src
 ** Open Config File
-   #+begin_src emacs-lisp
-   (defun shivu-open-config-file ()
-     "Open Config file for vanilla emacs holy mode. Change the file path for a new configuration"
-     (interactive)
-     (find-file "~/.emacs.vanilla/config.org")	 )
+#+begin_src emacs-lisp
+(defun shivu-open-config-file ()
+  "Open Config file for vanilla emacs holy mode. Change the file path for a new configuration"
+  (interactive)
+  (find-file "~/.emacs.vanilla/config.org")	 )
 
-   #+end_src
+#+end_src
 * Custom Key-Bindings
 * Customize Settings
 Save custom settings in custom.el instead of init.el
@@ -52,55 +52,55 @@ Save custom settings in custom.el instead of init.el
   
 * Completion
 ** Company
-   #+begin_src emacs-lisp
-   (use-package company
-     :ensure t
-     :init
-     (add-hook 'after-init-hook 'global-company-mode))
-   #+end_src
+#+begin_src emacs-lisp
+(use-package company
+  :ensure t
+  :init
+  (add-hook 'after-init-hook 'global-company-mode))
+#+end_src
 * Checkers
 ** Flycheck
-   #+begin_src emacs-lisp
-   (use-package flycheck
-     :ensure t
-     :init (global-flycheck-mode))
-   #+end_src
+#+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+#+end_src
 * Jvascript
 ** RJSX Mode
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-   (use-package rjsx-mode
-     :ensure t
-     :mode "\\.js\\'")
-   #+end_src
+(use-package rjsx-mode
+  :ensure t
+  :mode "\\.js\\'")
+#+end_src
 ** Tide
-   #+begin_src emacs-lisp
-   (defun setup-tide-mode ()
-     "Setup function for tide"
-     (interactive)
-     (tide-setup)
-     (flycheck-mode +1)
-     (setq flycheck-check-syntax-automatically '(save mode-enabled))
-     (eldoc-mode +1)
-     (tide-hl-identifier-mode +1)
-     ;; company is an optional dependency. You have to
-     ;; install it separately via package-install
-     ;; `M-x package-install [ret] company`
-     (company-mode +1))
-   (use-package tide
-     :ensure t
-     :after (rjsx-mode company flycheck )
-     :hook (rjsx-mode . setup-tide-mode))
-   #+end_src
+#+begin_src emacs-lisp
+(defun setup-tide-mode ()
+  "Setup function for tide"
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+(use-package tide
+  :ensure t
+  :after (rjsx-mode company flycheck )
+  :hook (rjsx-mode . setup-tide-mode))
+#+end_src
 ** Prettier
-   #+begin_src emacs-lisp
-   (use-package prettier-js
-     :ensure t
-     :after (rjsx-mode)
-     :hook(rjsx-mode . prettier-js-mode))
-   #+end_src
+#+begin_src emacs-lisp
+(use-package prettier-js
+  :ensure t
+  :after (rjsx-mode)
+  :hook(rjsx-mode . prettier-js-mode))
+#+end_src
 
-* Org
+* Org(MAJOR REFACTOR NEEDED!!!)
 ** Org initial definations
 The set face attribute for org checkbox is written below
 Use this for future reference
@@ -324,71 +324,69 @@ We want the same syntax highlighting in source blocks as in the native language 
 #+end_src
 
 * Ledger Mode
-  Ledger mode to maintain personal accounts
-  #+begin_src emacs-lisp
-  (use-package ledger-mode
-    :ensure t)
-
-  #+end_src
-
+Ledger mode to maintain personal accounts
+#+begin_src emacs-lisp
+(use-package ledger-mode
+  :ensure t)
+#+end_src
 * Rest
-  #+begin_src emacs-lisp
-  (use-package restclient
-    :ensure t
-    :mode ("\\.http\\'" . restclient-mode)
-    )
-  #+end_src
+#+begin_src emacs-lisp
+(use-package restclient
+  :ensure t
+  :mode ("\\.http\\'" . restclient-mode)
+  )
+#+end_src
 * Which-key
-  #+begin_src emacs-lisp
-  (use-package which-key
-    :ensure t
-    :config
-    (which-key-mode 1))
-  #+end_src
+#+begin_src emacs-lisp
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode 1))
+#+end_src
 * Magit
-  Installed through package installer command through M-x
+Installed through package installer command through M-x
 * Elfeed
-  The configuration for elfeed
-  #+begin_src elisp
-  (use-package elfeed
-    :ensure t
-    :config
-    (setq elfeed-feeds
-	  '(("https://reactjs.org/feed.xml" React Tech)
-	    ("https://feeds.feedburner.com/ReactjsComponents?format=xml" React Tech)
-	    ("https://reactnative.dev/blog/rss.xml" React-Native Tech)
-	    ("https://dev.to/feed/tag/react" React Tech)
-	    ("https://dev.to/feed/tag/productivity" Productivity Tech)
-	    ("https://dev.to/feed/tag/css" CSS Tech)
-	    ("https://dev.to/feed/tag/devops" Devops Tech)
-	    ("https://dev.to/feed/tag/testing" Testing Tech)
-	    ("https://dev.to/feed/tag/machinelearning" Machine-Learning Tech)
-	    ("https://www.thehindu.com/opinion/editorial/feeder/default.rss" News Editorial)
-	    ("https://madewithreact.com/rss/" React Tech))))
-  #+end_src
+The configuration for elfeed
+#+begin_src elisp
+(use-package elfeed
+  :ensure t
+  :config
+  (setq elfeed-feeds
+	'(("https://reactjs.org/feed.xml" React Tech)
+	  ("https://feeds.feedburner.com/ReactjsComponents?format=xml" React Tech)
+	  ("https://reactnative.dev/blog/rss.xml" React-Native Tech)
+	  ("https://dev.to/feed/tag/react" React Tech)
+	  ("https://dev.to/feed/tag/productivity" Productivity Tech)
+	  ("https://dev.to/feed/tag/css" CSS Tech)
+	  ("https://dev.to/feed/tag/devops" Devops Tech)
+	  ("https://dev.to/feed/tag/testing" Testing Tech)
+	  ("https://dev.to/feed/tag/machinelearning" Machine-Learning Tech)
+	  ("https://www.thehindu.com/opinion/editorial/feeder/default.rss" News Editorial)
+	  ("https://madewithreact.com/rss/" React Tech))))
+#+end_src
 
 * PDF
-  #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-  (use-package pdf-tools
-    :ensure t
-    :config
-    (pdf-tools-install))
-  (use-package saveplace-pdf-view
-    :ensure t
-    :config
-    (save-place-mode 1))
-  #+end_src
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install))
+(use-package saveplace-pdf-view
+  :ensure t
+  :config
+  (save-place-mode 1))
+#+end_src
 * Avy
-  #+begin_src emacs-lisp
-  (use-package avy
-    :ensure t
-    :init
-    (setq avy-keys '(?a ?o ?e ?u ?i ?d ?h ?t ?n ?s)))
-  #+end_src
+#+begin_src emacs-lisp
+(use-package avy
+  :ensure t
+  :init
+  (setq avy-keys '(?a ?o ?e ?u ?i ?d ?h ?t ?n ?s)))
+#+end_src
 * ibuffer
-  #+begin_src emacs-lisp
-  (require 'ibuffer)
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
+#+begin_src emacs-lisp
+(require 'ibuffer)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
 
-  #+end_src
+#+end_src
