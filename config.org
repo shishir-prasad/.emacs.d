@@ -339,7 +339,8 @@ The configuration for elfeed
 #+begin_src emacs-lisp
 (use-package avy
   :ensure t
-  )
+  :init
+  (setq avy-keys '(?a ?o ?e ?u ?i ?d ?h ?t ?n ?s)))
 #+end_src
 * ibuffer
 #+begin_src emacs-lisp
