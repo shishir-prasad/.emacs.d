@@ -1,0 +1,349 @@
+#+TITLE: Shishir's Vanilla Emacs Configuration
+
+* Setup Melpa
+  The set up adds  Melpa to the list of org-archives. The initialization configuration is placed in init.el.
+
+  Other than initial config rest is written in org file in the form of literate config.
+  The following block is not a part of emacs-lisp block as it is already mentioned in init.el
+  #+begin_src
+ (require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
+(package-refresh-contents)
+(package-initialize)
+
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+(setq use-package-always-ensure t)
+  #+end_src
+
+Set org up structure template for emacs-lisp source code block
+
+  #+begin_src emacs-lisp
+(require 'org-tempo)
+  #+end_src
+  
+* Custom Functions
+** Load Init file
+  The custom functions built to facilitate my needs
+Reload emacs configuration with this function.
+#+begin_src emacs-lisp
+(defun shivu-load-init-file ()
+  "Load the init file in vanilla emacs folder. Change the file path for other configuration"
+ (interactive)
+ (load-file "~/.emacs.vanilla/init.el"))
+#+end_src
+** Open Config File
+   #+begin_src emacs-lisp
+	       (defun shivu-open-config-file ()
+     "Open Config file for vanilla emacs holy mode. Change the file path for a new configuration"
+(interactive)
+	(find-file "~/.emacs.vanilla/config.org")	 )
+
+   #+end_src
+* Completion
+** Company
+#+begin_src emacs-lisp
+(use-package company
+  :ensure t
+  :init
+  (add-hook 'after-init-hook 'global-company-mode))
+#+end_src
+* Checkers
+** Flycheck
+#+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+#+end_src
+* Javascript
+** RJSX Mode
+#+begin_src emacs-lisp
+
+(use-package rjsx-mode
+  :ensure t
+  :mode "\\.js\\'")
+#+end_src
+** Tide
+#+begin_src emacs-lisp
+    (defun setup-tide-mode ()
+"Setup function for tide"
+      (interactive)
+      (tide-setup)
+      (flycheck-mode +1)
+      (setq flycheck-check-syntax-automatically '(save mode-enabled))
+      (eldoc-mode +1)
+      (tide-hl-identifier-mode +1)
+      ;; company is an optional dependency. You have to
+      ;; install it separately via package-install
+      ;; `M-x package-install [ret] company`
+      (company-mode +1))
+    (use-package tide
+      :ensure t
+      :after (rjsx-mode company flycheck )
+      :hook (rjsx-mode . setup-tide-mode))
+#+end_src
+** Prettier
+#+begin_src emacs-lisp
+(use-package prettier-js
+  :ensure t
+  :after (rjsx-mode)
+  :hook(rjsx-mode . prettier-js-mode))
+#+end_src
+
+* Org default Setup
+  Change the default settings of org
+
+  #+begin_src emacs-lisp
+(setq inhibit-startup-message t)
+  (setq org-src-preserve-indentation nil
+      org-src-tab-acts-natively t
+      org-edit-src-content-indentation 0)
+  (setq org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-confirm-babel-evaluate nil
+        org-edit-src-content-indentation 0)
+  #+end_src
+
+  #+RESULTS:
+  : 0
+
+* Ledger Mode
+  Ledger mode to maintain personal accounts
+  #+begin_src emacs-lisp
+    (use-package ledger-mode
+		 :ensure t)
+
+  #+end_src
+
+* Org
+** Org initial definations
+The set face attribute for org checkbox is written below
+Use this for future reference
+(set-face-attribute 'org-checkbox nil
+:bold 'normal
+:box '(:line-width 1 :color "dim gray" :style nil)
+:foreground "gray"
+:background nil)
+;; * headline [7%] -> checkbox statistics face.
+(set-face-attribute 'org-checkbox-statistics-todo nil
+;; :height 0.9
+:box '(:color "cyan" :line-width 1)
+:background "#002B36" :foreground "green yellow"
+:bold t
+)
+(set-face-attribute 'org-checkbox-statistics-done nil
+:background "#222222" :foreground "black"
+:box '(:color "cyan" :line-width 1)
+:strike-through t)
+		    
+#+begin_src emacs-lisp
+  (defun org-journal-file-header-func (time)
+    "Custom function to create journal header."
+    (concat
+     (pcase org-journal-file-type
+       (`daily "#+TITLE: Daily Journal\n#+STARTUP: showeverything")
+       (`weekly "#+TITLE: Weekly Journal\n#+STARTUP: folded")
+       (`monthly "#+TITLE: Monthly Journal\n#+STARTUP: folded")
+       (`yearly "#+TITLE: Yearly Journal\n#+STARTUP: folded"))))
+
+  (add-hook 'org-mode-hook 'org-indent-mode) 
+  (setq org-directory "~/Org/"
+	org-agenda-files '("~/org/gtd/projects.org"
+			   "~/org/gtd/meetings.org"
+			   "~/org/gtd/learning.org"
+			   "~/org/gtd/ideas.org"
+			   "~/org/gtd/tickler.org"
+			   "~/org/gtd/tasks.org"
+			   "~/org/gtd/inbox.org")
+	org-default-notes-file (expand-file-name "notes.org" org-directory)
+	org-ellipsis "_"
+	org-M-RET-may-split-line '((default . nil))
+	org-log-done 'time
+	org-journal-dir "~/org/gtd/journal/"
+	org-journal-enable-agenda-integration t
+	org-journal-file-type 'monthly
+	org-journal-file-format "(%B)%m,%Y.org"
+	org-journal-carryover-items "TODO=\"TODO\"|TODO=\"NEXT\"|TODO=\"PROJ\"|TODO=\"STRT\"|TODO=\"WAIT\"|TODO=\"HOLD\""
+	org-journal-date-format "%B %d, %Y (%A)"
+
+	org-journal-file-header 'org-journal-file-header-func
+	org-hide-emphasis-markers t)
+  (setq  org-todo-keywords
+	 '((sequence
+	    "TODO(t)"  ; A task that needs doing & is ready to do
+	    "PROJ(p)"  ; Project with multiple task items.
+	    "NEXT(n)"  ; Task is next to be worked on.
+	    "WAIT(w)"  ; Something external is holding up this task
+	    "|"
+	    "DONE(d)"  ; Task successfully completed
+	    "KILL(k)"))  ; Task was cancelled, aborted or is no longer applicable
+	 org-todo-keyword-faces
+	 '(("TODO" . "red") ("WAIT" . "magenta") ("PROJ" . "red") ("NEXT" . "red") ("DONE" . "green")))
+
+  (setq  org-capture-templates '(("t" "Todo" entry
+				  (file+headline "gtd/tasks.org" "Tasks")
+				  "* TODO %i%? \nDEADLINE: %^t")
+				 ("T" "Tickler" entry
+				  (file+headline "gtd/tickler.org" "Tickler")
+				  "* TODO %i%? \nSCHEDULED: %^t")
+				 ("d" "Day-Planner" plain
+				  (file+olp+datetree "gtd/daily-planner.org")
+				  "Most Important Tasks
+- [ ]
+- [ ]
+- [ ]
+      Secondary Tasks
+      - [ ]
+      - [ ]
+      - [ ]
+      Daily Tasks
+      - [ ] iBrew-Hub Website and content
+      - [ ] Learn for 2-3 hours
+      - [ ] Journal entry about today's work to be written as blog"
+				  :empty-lines-before 0 )))
+
+  (setq  org-pomodoro-keep-killed-pomodoro-time t)
+
+  (set-face-attribute 'org-checkbox nil
+		      :bold 'normal
+		      :foreground "gray"
+		      :background nil)
+  ;; * headline [7%] -> checkbox statistics face.
+  (set-face-attribute 'org-checkbox-statistics-todo nil
+		      ;; :height 0.9
+		      :foreground "#e1341e"
+		      :bold t
+		      )
+  (set-face-attribute 'org-checkbox-statistics-done nil
+		      :foreground "green"
+		      :strike-through t)
+#+end_src
+** Org-Clock
+#+begin_src emacs-lisp
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)
+#+end_src
+** Org packages
+#+begin_src emacs-lisp
+  (use-package org-journal
+    :ensure t)
+  (use-package ob-async
+    :ensure t)
+
+ (use-package ob-restclient
+   :ensure t)
+ (use-package org-pomodoro
+   :ensure t)
+ (use-package org-noter
+   :ensure t
+   :config
+   ;; Your org-noter config ........
+   (require 'org-noter-pdftools))
+
+ (use-package org-pdftools
+   :ensure t
+   :hook (org-mode . org-pdftools-setup-link))
+
+ (use-package org-noter-pdftools
+   :ensure t
+   :after org-noter
+   :config
+   ;; Add a function to ensure precise note is inserted
+   (defun org-noter-pdftools-insert-precise-note (&optional toggle-no-questions)
+     (interactive "P")
+     (org-noter--with-valid-session
+      (let ((org-noter-insert-note-no-questions (if toggle-no-questions
+						     (not org-noter-insert-note-no-questions)
+						   org-noter-insert-note-no-questions))
+	     (org-pdftools-use-isearch-link t)
+	     (org-pdftools-use-freestyle-annot t))
+	 (org-noter-insert-note (org-noter--get-precise-info)))))
+
+   ;; fix https://github.com/weirdNox/org-noter/pull/93/commits/f8349ae7575e599f375de1be6be2d0d5de4e6cbf
+   (defun org-noter-set-start-location (&optional arg)
+     "When opening a session with this document, go to the current location.
+		  With a prefix ARG, remove start location."
+     (interactive "P")
+     (org-noter--with-valid-session
+      (let ((inhibit-read-only t)
+	     (ast (org-noter--parse-root))
+	     (location (org-noter--doc-approx-location (when (called-interactively-p 'any) 'interactive))))
+	 (with-current-buffer (org-noter--session-notes-buffer session)
+	   (org-with-wide-buffer
+	    (goto-char (org-element-property :begin ast))
+	    (if arg
+		(org-entry-delete nil org-noter-property-note-location)
+	      (org-entry-put nil org-noter-property-note-location
+			     (org-noter--pretty-print-location location))))))))
+   (with-eval-after-load 'pdf-annot
+     (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((restclient . t)
+     (emacs-lisp . t)
+     (js . t)
+     (org . t)
+     (ledger . t)))
+#+end_src
+* Rest
+#+begin_src emacs-lisp
+(use-package restclient
+  :ensure t
+  :mode ("\\.http\\'" . restclient-mode)
+  )
+#+end_src
+* Which-key
+#+begin_src emacs-lisp
+(use-package which-key
+:ensure t
+:config
+(which-key-mode 1))
+#+end_src
+* Magit
+Installed through package installer command through M-x
+* Elfeed
+The configuration for elfeed
+#+begin_src elisp
+  (use-package elfeed
+    :ensure t
+    :config
+    (setq elfeed-feeds
+	  '(("https://reactjs.org/feed.xml" React Tech)
+	    ("https://feeds.feedburner.com/ReactjsComponents?format=xml" React Tech)
+	    ("https://reactnative.dev/blog/rss.xml" React-Native Tech)
+	    ("https://dev.to/feed/tag/react" React Tech)
+	    ("https://dev.to/feed/tag/productivity" Productivity Tech)
+	    ("https://dev.to/feed/tag/css" CSS Tech)
+	    ("https://dev.to/feed/tag/devops" Devops Tech)
+	    ("https://dev.to/feed/tag/testing" Testing Tech)
+	    ("https://dev.to/feed/tag/machinelearning" Machine-Learning Tech)
+	    ("https://www.thehindu.com/opinion/editorial/feeder/default.rss" News Editorial)
+	    ("https://madewithreact.com/rss/" React Tech))))
+#+end_src
+
+* PDF
+#+begin_src emacs-lisp
+
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install))
+(use-package saveplace-pdf-view
+  :ensure t
+  :config
+  (save-place-mode 1))
+#+end_src
+* Avy
+#+begin_src emacs-lisp
+(use-package avy
+  :ensure t
+  )
+#+end_src
+* ibuffer
+#+begin_src emacs-lisp
+(require 'ibuffer)
+ (global-set-key (kbd "C-x C-b") 'ibuffer)
+
+#+end_src
